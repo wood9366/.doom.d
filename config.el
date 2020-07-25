@@ -33,7 +33,7 @@
         (dolist (charset '(kana han symbol cjk-misc bopomofo))
           (set-fontset-font (frame-parameter nil 'font)
                             charset
-                            (font-spec :family "WenQuanYi Micro Hei Mono Light")))) ;; 14 16 20 22 28
+                            (font-spec :family "WenQuanYi Micro Hei Mono Light" :size 16)))) ;; 14 16 20 22 28
     ))
 
 (defun ly/set-frame-font(frame)
@@ -44,6 +44,10 @@
 (if (and (fboundp 'daemonp) (daemonp))
     (add-hook 'after-make-frame-functions #'ly/set-frame-font)
   (ly/set-font))
+
+;; 12345678
+;; abcdefgh
+;; 你好你好你好
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -56,7 +60,7 @@
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type t)
+(setq display-line-numbers-type nil)
 
 
 ;; Here are some additional functions/macros that could help you configure Doom:
@@ -80,6 +84,11 @@
 ;; (use-package! lsp-mode
 ;;   :config
 ;;   (setq lsp-csharp-server-path "/usr/local/bin/omnisharp"))
+
+(map! :localleader
+      :map omnisharp-mode-map
+      (:prefix "r"
+       "."  #'omnisharp-run-code-action-refactoring))
 
 (after! org-re-reveal
   (setq org-re-reveal-root
