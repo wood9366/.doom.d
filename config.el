@@ -93,3 +93,8 @@
 (after! org-re-reveal
   (setq org-re-reveal-root
         (concat "file://" (expand-file-name "~/packs/reveal.js"))))
+
+(add-to-list 'auto-mode-alist
+             '("Construct\\'" . perl-mode))
+
+(defalias 'perl-mode 'cperl-mode)
