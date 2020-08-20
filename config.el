@@ -91,8 +91,8 @@
        "."  #'omnisharp-run-code-action-refactoring))
 
 (after! org-re-reveal
-  (setq org-re-reveal-root
-        (concat "file://" (expand-file-name "~/packs/reveal.js"))))
+  (setq org-re-reveal-root (concat "file://" (expand-file-name "~/packs/reveal.js"))
+        org-re-reveal-revealjs-version "4"))
 
 (add-to-list 'auto-mode-alist
              '("Construct\\'" . perl-mode))
