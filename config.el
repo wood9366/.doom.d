@@ -33,7 +33,7 @@
         (dolist (charset '(kana han symbol cjk-misc bopomofo))
           (set-fontset-font (frame-parameter nil 'font)
                             charset
-                            (font-spec :family "WenQuanYi Micro Hei Mono Light" :size 16)))) ;; 14 16 20 22 28
+                            (font-spec :family "WenQuanYi Micro Hei Mono" :size 16)))) ;; 14 16 20 22 28
     ))
 
 (defun ly/set-frame-font(frame)
@@ -79,6 +79,8 @@
 ;;
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
+
+;; csharp
 (after! omnisharp
   (setq omnisharp-server-executable-path "/usr/local/bin/omnisharp"))
 ;; (use-package! lsp-mode
@@ -90,11 +92,32 @@
       (:prefix "r"
        "."  #'omnisharp-run-code-action-refactoring))
 
+;; org reveal
 (after! org-re-reveal
   (setq org-re-reveal-root (concat "file://" (expand-file-name "~/packs/reveal.js"))
         org-re-reveal-revealjs-version "4"))
 
+;; lua
+(add-to-list 'auto-mode-alist
+             '("lua\\.txt\\'" . lua-mode))
+
+;; (use-package! lsp-mode
+;;   :config
+;;   (setq lsp-clients-emmy-lua-jar-path (f-expand "~/packs/EmmyLua-LS-all.jar")))
+
+;; perl
+(defalias 'perl-mode 'cperl-mode)
+
 (add-to-list 'auto-mode-alist
              '("Construct\\'" . perl-mode))
 
-(defalias 'perl-mode 'cperl-mode)
+(after! cperl-mode
+  (setq
+   cperl-close-paren-offset -4
+   cperl-continued-statement-offset 4
+   cperl-indent-level 4
+   cperl-indent-parens-as-block t
+   cperl-tabs-always-indent t))
+
+(add-hook! lua-mode
+  (add-hook! 'xref-backend-functions :local #'etags--xref-backend))
