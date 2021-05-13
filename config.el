@@ -124,3 +124,9 @@
 
 (add-hook! lua-mode
   (add-hook! 'xref-backend-functions :local #'etags--xref-backend))
+(use-package rime
+  :custom
+  (rime-librime-root "~/.emacs.d/librime/dist")
+  (rime-user-data-dir "~/Library/Rime")
+  (rime-show-candidate 'posframe)
+  (default-input-method "rime"))
