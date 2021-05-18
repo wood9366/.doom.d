@@ -135,31 +135,34 @@
   (rime-show-candidate 'posframe)
   (default-input-method "rime"))
 
-; mail
-(setq smtpmail-smtp-service 25)
- 
-(set-email-account! "1hy"
-                    '((user-mail-address            . "liyang@hy.com")
-                      (smtpmail-smtp-user           . "liyang@hy.com")
-                      (smtpmail-default-smtp-server . "192.168.2.238")
-                      (smtpmail-smtp-server         . "192.168.2.238")
-                      (smtpmail-stream-type         . plain)
-                      (mu4e-sent-folder             . "/1hy/Sent")
-                      (mu4e-drafts-folder           . "/1hy/Drafts")
-                      (mu4e-trash-folder            . "/1hy/Trash")
-                      (mu4e-refile-folder           . "/1hy/All")
-                      (mu4e-compose-signature       . "---\nLi Yang"))
-                    t)
 
-(set-email-account! "2hy-nas"
-                    '((user-mail-address            . "liyang@huanyudigital.net")
-                      (smtpmail-smtp-user           . "liyang@huanyudigital.net")
-                      (smtpmail-default-smtp-server . "192.168.2.240")
-                      (smtpmail-smtp-server         . "192.168.2.240")
-                      (smtpmail-stream-type         . plain)
-                      (mu4e-sent-folder             . "/2hy-nas/Sent")
-                      (mu4e-drafts-folder           . "/2hy-nas/Drafts")
-                      (mu4e-trash-folder            . "/2hy-nas/Trash")
-                      (mu4e-refile-folder           . "/2hy-nas/All")
-                      (mu4e-compose-signature       . "---\nLi Yang"))
-                    t)
+; mail
+(after! mu4e
+  (setq smtpmail-smtp-service 25
+        mu4e-use-fancy-chars nil)
+
+  (set-email-account! "1hy"
+                      '((user-mail-address            . "liyang@hy.com")
+                        (smtpmail-smtp-user           . "liyang@hy.com")
+                        (smtpmail-default-smtp-server . "192.168.2.238")
+                        (smtpmail-smtp-server         . "192.168.2.238")
+                        (smtpmail-stream-type         . plain)
+                        (mu4e-sent-folder             . "/1hy/Sent")
+                        (mu4e-drafts-folder           . "/1hy/Drafts")
+                        (mu4e-trash-folder            . "/1hy/Trash")
+                        (mu4e-refile-folder           . "/1hy/All")
+                        (mu4e-compose-signature       . "---\nLi Yang"))
+                      t)
+
+  (set-email-account! "2hy-nas"
+                      '((user-mail-address            . "liyang@huanyudigital.net")
+                        (smtpmail-smtp-user           . "liyang@huanyudigital.net")
+                        (smtpmail-default-smtp-server . "192.168.2.240")
+                        (smtpmail-smtp-server         . "192.168.2.240")
+                        (smtpmail-stream-type         . plain)
+                        (mu4e-sent-folder             . "/2hy-nas/Sent")
+                        (mu4e-drafts-folder           . "/2hy-nas/Drafts")
+                        (mu4e-trash-folder            . "/2hy-nas/Trash")
+                        (mu4e-refile-folder           . "/2hy-nas/All")
+                        (mu4e-compose-signature       . "---\nLi Yang"))
+                      t))
