@@ -83,6 +83,10 @@
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
 
+(map! :map 'Info-mode-map
+      :n "gn" #'Info-scroll-up
+      :n "gp" #'Info-scroll-down)
+
 ;; csharp
 (after! omnisharp
   (setq omnisharp-server-executable-path "/usr/local/bin/omnisharp"))
