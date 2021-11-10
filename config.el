@@ -166,3 +166,30 @@
                         (mu4e-refile-folder           . "/2hy-nas/All")
                         (mu4e-compose-signature       . "---\nLi Yang"))
                       t))
+
+(defun markdown-preview-filter (buffer)
+  (princ (with-current-buffer buffer
+    (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
+  (current-buffer)))
+
+(defun markdown-preview-start ()
+  "start preview markdown in browser"
+  (interactive)
+  (if (eq major-mode 'markdown-mode)
+      (progn
+        (unless (httpd-running-p)
+          (httpd-start))
+        (impatient-mode)
+        (imp-set-user-filter #'markdown-preview-filter)
+        (browse-url (format "http://localhost:8080/imp/live/%s/" (buffer-name))))
+    (message "current buffer isn't markdown mode")))
+
+(defun markdown-preview-stop()
+  "stop preview markdown in browser"
+  (interactive)
+  (if (eq major-mode 'markdown-mode)
+      (progn
+        (if (httpd-running-p)
+            (httpd-stop))
+        (impatient-mode 0)
+        (imp-remove-user-filter))))
