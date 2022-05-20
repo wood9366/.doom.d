@@ -33,7 +33,9 @@
         (dolist (charset '(kana han symbol cjk-misc bopomofo))
           (set-fontset-font (frame-parameter nil 'font)
                             charset
-                            (font-spec :family "WenQuanYi Micro Hei Mono" :size 16)))) ;; 14 16 20 22 28
+                            (font-spec :family "Source Han Sans SC" :size 16)))
+                            ;; (font-spec :family "WenQuanYi Micro Hei Mono" :size 16)))
+        ) ;; 14 16 20 22 28
     ))
 
 (defun ly/set-frame-font(frame)
@@ -87,12 +89,108 @@
       :n "gn" #'Info-scroll-up
       :n "gp" #'Info-scroll-down)
 
+(defun tidy-xml ()
+  "Tidies the HTML content in the buffer using `tidy'"
+  (interactive)
+  (shell-command-on-region
+   ;; beginning and end of buffer
+   (point-min)
+   (point-max)
+   ;; command and parameters
+   "tidy -i -w -xml -q"
+   ;; output buffer
+   (current-buffer)
+   ;; replace?
+   t
+   ;; name of the error buffer
+   "*Tidy Error Buffer*"
+   ;; show error buffer?
+   t))
+
 ;; csharp
-(after! omnisharp
-  (setq omnisharp-server-executable-path "/usr/local/bin/omnisharp"))
-;; (use-package! lsp-mode
+;; (after! omnisharp
+;;   (setq omnisharp-server-executable-path "/usr/local/bin/omnisharp"))
+(use-package! csharp-mode
+  :mode "\\.cs\\'")
+
+;; (add-hook! csharp-mode
+;;   (setq-local projectile-generic-command "fd . -0 -H --color=never --type file --type symlink --follow --exclude .git -e cs"))
+
+(defadvice! projectile-files-via-ext-command-around (fn root command)
+  :around '(projectile-files-via-ext-command)
+  (when command
+    (let ((cmd command))
+      (let ((unity-ver-file (cond ((locate-file "ProjectVersion.txt"
+                                                `(,(concat (file-name-as-directory root)
+                                                           "ProjectSettings"))))
+                                  ((locate-file "ProjectVersion.txt"
+                                                `(,(concat (file-name-as-directory root)
+                                                           (file-name-as-directory "unity")
+                                                           "ProjectSettings")))))))
+        (if unity-ver-file
+            (setq cmd (concat cmd " -e sh -e cs -e txt -e md -e txt -e json -e xml -e bytes -e lua -e shader -e cginc"))))
+      (message "ext command run at root %s with command %s" root cmd)
+      (funcall fn root cmd))))
+
+(add-to-list 'auto-mode-alist '("cginc\\'" . shader-mode))
+(add-to-list 'auto-mode-alist '("glslinc\\'" . shader-mode))
+
+;; (use-package! tree-sitter
 ;;   :config
-;;   (setq lsp-csharp-server-path "/usr/local/bin/omnisharp"))
+;;   (require 'tree-sitter-langs)
+;;   (global-tree-sitter-mode)
+;;   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+  ;; (require 'tree-sitter-indent)
+  ;; (add-hook 'tree-sitter-after-on-hook #'tree-sitter-indent-mode))
+;; (use-package! csharp-mode
+;;   :ensure t
+;;   :config
+;;   (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-tree-sitter-mode)))
+
+;; (set-docsets! 'csharp-mode "unity3d")
+
+;; (use-package! dash-docs
+;;   :config
+;;   (setq dash-docs-docsets-path (expand-file-name "~/Library/Application Support/Dash/DocSets")))
+
+(use-package! lsp-mode
+  :config
+  (setq lsp-csharp-server-path "/usr/local/bin/omnisharp")
+  (loop for it in '("[/\\\\]Library\\'"
+                    "[/\\\\]Temp\\'"
+                    "[/\\\\]Builds\\'"
+                    "[/\\\\]DownloadAssets\\'"
+                    "[/\\\\]Logs\\'"
+                    "[/\\\\]obj\\'"
+                    "[/\\\\]_Android\\'"
+                    "[/\\\\]_iOS\\'")
+        do (add-to-list 'lsp-file-watch-ignored-directories it))
+
+  (loop for it in '("[/\\\\].+\\.csproj\\'"
+                    "[/\\\\].+\\.sln\\'"
+                    "[/\\\\].+\\.meta\\'")
+        do (add-to-list 'lsp-file-watch-ignored-files it))
+  (setq lsp-file-watch-threshold 2000))
+
+(defun wood9366/project-try-projectile (dir)
+  (let ((probe (locate-dominating-file dir ".projectile")))
+    (when probe (cons 'transient probe))))
+
+(add-hook 'project-find-functions #'wood9366/project-try-projectile 'append)
+
+(add-hook 'c++-mode-hook
+          (lambda()
+            (setq-local flycheck-disabled-checkers '(c/c++-clang c/c++-gcc c/c++-cppcheck))))
+
+(when (featurep! :tools lsp +eglot)
+  (use-package! eglot
+    :init
+    (add-to-list 'eglot-stay-out-of 'eldoc)))
+
+;; (use-package! eglot
+;;   :config
+;;   (add-to-list "eglot-server-programs '(csharp-mode . ("/usr/local/bin/omnisharp" "-lsp"))))
 
 (map! :localleader
       :map omnisharp-mode-map
@@ -105,8 +203,21 @@
         org-re-reveal-revealjs-version "4"))
 
 ;; lua
-(add-to-list 'auto-mode-alist
-             '("lua\\.txt\\'" . lua-mode))
+(add-to-list 'auto-mode-alist '("lua\\.txt\\'" . lua-mode))
+(add-to-list 'auto-mode-alist '("lua\\.bytes\\'" . lua-mode))
+
+(after! lua-mode
+  (setq lua-indent-level 4))
+
+(add-hook! lua-mode
+  (add-hook! 'xref-backend-functions :local #'etags--xref-backend))
+
+;; (when (featurep! :tools lsp)
+;;   (setq lsp-lua-files-associations '(("*.lua" . "lua"))))
+;; (after! lsp-mode
+;;   (setq lsp-lua-files-associations '(("*.lua.bytes" . "lua")
+;;                                      ("*.lua.txt" . "lua")
+;;                                      ("*.lua" . "lua"))))
 
 ;; (use-package! lsp-mode
 ;;   :config
@@ -126,8 +237,6 @@
    cperl-indent-parens-as-block t
    cperl-tabs-always-indent t))
 
-(add-hook! lua-mode
-  (add-hook! 'xref-backend-functions :local #'etags--xref-backend))
 (use-package rime
   :custom
   (rime-librime-root "~/.emacs.d/librime/dist")
